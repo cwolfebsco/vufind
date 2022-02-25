@@ -119,6 +119,12 @@ class Params extends \VuFind\Search\Base\Params
             $defaultSearchMode = $this->getOptions()->getDefaultMode();
             $this->getOptions()->setSearchMode($defaultSearchMode);
         }
+
+        //overwrite autocorrect via URL
+        $autocorrect = $request->get('autocorrect');
+        if(isset($autocorrect) && !$autocorrect) {
+            $this->getOptions()->autoCorrect = 'n';
+        }
     }
 
     /**
@@ -140,6 +146,17 @@ class Params extends \VuFind\Search\Base\Params
 
         if ($options->highlightEnabled()) {
             $backendParams->set('highlight', true);
+        }
+
+        // add autosuggest & autocorrect
+
+        if ($options->autoSuggest === 'y') {
+            $backendParams->set('autoSuggest', true);
+        }
+        
+
+        if ($options->autoCorrect === 'y') {
+            $backendParams->set('autoCorrect', true);
         }
 
         $view = $this->getEdsView();
