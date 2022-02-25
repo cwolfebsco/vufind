@@ -130,4 +130,24 @@ class RecordCollection extends AbstractRecordCollection
         }
         return 0;
     }
+
+    /**
+     * Return raw autoCorrect.
+     *
+     * @return array
+     */
+    public function getAutoCorrect()
+    {
+        return $this->response['SearchResult']['AutoCorrectedTerms'] ?? [];
+    }
+
+    /**
+     * Return raw autoSuggest.
+     *
+     * @return array
+     */
+    public function getAutoSuggest()
+    {
+        return $this->response['SearchResult']['AutoSuggestedTerms'] ?? [];
+    }
 }

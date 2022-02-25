@@ -74,7 +74,8 @@ class Results extends \VuFind\Search\Base\Results
         if (null != $collection) {
             $this->responseFacets = $collection->getFacets();
             $this->resultTotal = $collection->getTotal();
-
+            $this->autoSuggest = $collection->getAutoSuggest();
+            $this->autoCorrect = $collection->getAutoCorrect();
             // Add a publication date facet
             $this->responseFacets[] = [
                 'fieldName' => 'PublicationDate',
