@@ -526,6 +526,17 @@ class Options extends \VuFind\Search\Base\Options
                     ];
                 }
             }
+
+            // AutoSuggest & AutoCorrect
+            if (isset($availCriteria['AvailableDidYouMeanOptions'])) {
+                foreach ($availCriteria['AvailableDidYouMeanOptions'] as $didYouMean) {
+                    if ($didYouMean['Id'] == 'AutoSuggest') {
+                        $this->autoSuggest = $didYouMean['DefaultOn'];
+                    } elseif ($didYouMean['Id'] == 'AutoCorrect') {
+                        $this->autoCorrect = $didYouMean['DefaultOn'];
+                    }
+                }
+            }
         }
     }
 
