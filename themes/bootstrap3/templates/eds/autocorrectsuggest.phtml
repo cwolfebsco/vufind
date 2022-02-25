@@ -1,0 +1,16 @@
+<div id="edsautcorrect">
+<?php if (count($this->autoCorrect) > 0): ?>
+    <p>
+        <?= $this->transEsc('Showing Results for: ') . $this->autoCorrect[0]?><br>
+        <!-- TODO: we need to find a way to disable autocomplete for this one query-->
+        <?= $this->transEsc('Search instead for: ')?> <a href="<?= $this->results->getUrlQuery()->replaceTerm($this->lookfor, $this->autoSuggest[0])?>&autocorrect=0"><?=$this->autoSuggest[0]?></a>
+    </p>
+<?php elseif(count($this->autoSuggest) > 0) :?>
+    <p>
+        <?= $this->transEsc('Did you mean?: ')?>
+        <?php foreach ($this->autoSuggest as $dym): ?>
+            <a href="<?= $this->results->getUrlQuery()->replaceTerm($this->lookfor, $dym);?>"><?= $dym ?> </a>
+        <?php endforeach; ?>
+    </p>
+<?php endif;?>
+</div>

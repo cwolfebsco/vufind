@@ -44,7 +44,7 @@
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results?>
     <?php foreach ($this->results->getRecommendations('top') as $index => $current): ?>
       <?=$this->recommend($current, 'top', $index)?>
     <?php endforeach; ?>
@@ -54,6 +54,9 @@
     <div class="search-stats">
       <?php if ($recordTotal > 0): ?>
         <?=$this->context()->renderInContext('search/controls/showing.phtml', ['lookfor' => $lookfor, 'recordTotal' => $recordTotal]) ?>
+        <?php if(count($this->results->autoSuggest) > 0 || count($this->results->autoCorrect) > 0 ):?>
+          <?=$this->context()->renderInContext('eds/autocorrectsuggest.phtml', ['autoCorrect' => $this->results->autoCorrect, 'autoSuggest' => $this->results->autoSuggest, 'lookfor' => $lookfor]) ?>
+        <?php endif;?>
         <a class="search-filter-toggle visible-xs" href="#search-sidebar" data-toggle="offcanvas" title="<?=$this->transEscAttr('sidebar_expand') ?>">
           <?=$this->transEsc('Refine Results') ?>
         </a>
