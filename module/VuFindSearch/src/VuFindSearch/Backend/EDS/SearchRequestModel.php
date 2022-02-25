@@ -118,6 +118,20 @@ class SearchRequestModel
     protected $highlight;
 
     /**
+     * Whether AutoSuggest should recommend spelling corrections
+     *
+     * @var bool
+     */
+    protected $autoSuggest;
+
+    /**
+     * Whether AutoCorrect should automatically correct typos in query
+     *
+     * @var bool
+     */
+    protected $autoCorrect;
+
+    /**
      * Collection of user actions to apply to current request
      *
      * @var array
@@ -277,7 +291,7 @@ class SearchRequestModel
 
         $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
         $qs['highlight'] = $highlightVal;
-
+        
         return $qs;
     }
 
@@ -351,6 +365,12 @@ class SearchRequestModel
         if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
             $json->SearchCriteria->Expanders = $this->expanders;
         }
+        
+        $autoSuggestVal = isset($this->autoSuggest) && $this->autoSuggest ? 'y' : 'n';
+        $json->SearchCriteria->AutoSuggest = $autoSuggestVal;
+
+        $autoCorrectVal = isset($this->autoCorrect) && $this->autoCorrect ? 'y' : 'n';
+        $json->SearchCriteria->AutoCorrect = $autoCorrectVal;
 
         if (isset($this->view)) {
             $json->RetrievalCriteria->View = $this->view;
