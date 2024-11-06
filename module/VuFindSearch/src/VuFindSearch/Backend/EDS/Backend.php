@@ -210,7 +210,7 @@ class Backend extends AbstractBackend
         ParamBag $params = null
     ) {
         // process EDS API communication tokens.
-        $authenticationToken = $this->getAuthenticationToken();
+        $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
         $sessionToken = $this->getSessionToken();
         $this->debug(
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
@@ -239,7 +239,7 @@ class Backend extends AbstractBackend
         $this->debug("Search Model query string: $qs");
         try {
             $response = $this->client
-                ->search($searchModel, $authenticationToken, $sessionToken);
+                ->search($searchModel, $authenticationToken, $sessionToken, $this->apiKey);
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
@@ -251,14 +251,15 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true);
+                                = $this->getAuthenticationToken(true, $this->apiKey);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
                         $response = $this->client->search(
                             $searchModel,
                             $authenticationToken,
-                            $sessionToken
+                            $sessionToken,
+                            $this->apiKey
                         );
                     } catch (Exception $e) {
                         throw new BackendException(
@@ -309,7 +310,7 @@ class Backend extends AbstractBackend
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
-            $authenticationToken = $this->getAuthenticationToken();
+            $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
             // check to see if the profile is overridden
             $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
@@ -368,7 +369,7 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true);
+                                = $this->getAuthenticationToken(true, $this->apiKey);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
@@ -479,7 +480,7 @@ class Backend extends AbstractBackend
     public function autocomplete($query, $domain = 'rawqueries')
     {
         return $this->client
-            ->autocomplete($query, $domain, $this->getAutocompleteData());
+            ->autocomplete($query, $domain, $this->getAutocompleteData(false), false, $this->apiKey);
     }
 
     /// Internal API
@@ -536,9 +537,9 @@ class Backend extends AbstractBackend
         if (!empty($username) && !empty($password)) {
             $this->debug(
                 'Calling Authenticate with username: '
-                . "$username, password: XXXXXXXX, orgid: $orgId "
+                . "$username, password: XXXXXXXX, orgid: $orgId, apiKey: $this->apiKey"
             );
-            $results = $this->client->authenticate($username, $password, $orgId);
+            $results = $this->client->authenticate($username, $password, $orgId, [], $this->apiKey);
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
             $authTokenData = ['token' => $token, 'expiration' => $timeout];
@@ -582,7 +583,7 @@ class Backend extends AbstractBackend
         $password = $this->password;
         if (!empty($username) && !empty($password)) {
             $results = $this->client
-                ->authenticate($username, $password, $this->orgId, ['autocomplete']);
+                ->authenticate($username, $password, $this->orgId, ['autocomplete'], $this->apiKey);
             $autoresult = $results['Autocomplete'] ?? [];
             if (
                 isset($autoresult['Token']) && isset($autoresult['TokenTimeOut'])
@@ -664,8 +665,8 @@ class Backend extends AbstractBackend
     public function createSession($isGuest, $profile = '')
     {
         try {
-            $authToken = $this->getAuthenticationToken();
-            $results = $this->client->createSession($profile, $isGuest, $authToken);
+            $authToken = $this->getAuthenticationToken(false, $this->apiKey);
+            $results = $this->client->createSession($profile, $isGuest, $authToken, $this->apiKey);
         } catch (ApiException $e) {
             $errorCode = $e->getApiErrorCode();
             $desc = $e->getApiErrorDescription();
@@ -675,9 +676,9 @@ class Backend extends AbstractBackend
             );
             if ($e->getApiErrorCode() == 104) {
                 try {
-                    $authToken = $this->getAuthenticationToken(true);
+                    $authToken = $this->getAuthenticationToken(true, $this->apiKey);
                     $results = $this->client
-                        ->createSession($this->profile, $isGuest, $authToken);
+                        ->createSession($this->profile, $isGuest, $authToken, $this->apiKey);
                 } catch (Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),
@@ -707,7 +708,7 @@ class Backend extends AbstractBackend
         if ($data = $this->cache->getItem($cacheKey)) {
             return $data;
         }
-        $authenticationToken = $this->getAuthenticationToken();
+        $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
         if (null == $sessionToken) {
             try {
                 $sessionToken = $this->getSessionToken();
@@ -717,7 +718,7 @@ class Backend extends AbstractBackend
             }
         }
         try {
-            $response = $this->client->info($authenticationToken, $sessionToken);
+            $response = $this->client->info($authenticationToken, $sessionToken, $this->apiKey);
         } catch (ApiException $e) {
             // if the auth or session token was invalid, try once more
             switch ($e->getApiErrorCode()) {
@@ -729,12 +730,12 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true);
+                                = $this->getAuthenticationToken(true, $this->apiKey);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
                         $response = $this->client
-                            ->info($authenticationToken, $sessionToken);
+                            ->info($authenticationToken, $sessionToken, $this->apiKey);
                     } catch (Exception $e) {
                         throw new BackendException(
                             $e->getMessage(),
