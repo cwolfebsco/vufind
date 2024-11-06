@@ -115,6 +115,13 @@ class Backend extends AbstractBackend
     protected $orgId;
 
     /**
+     * API Key provded by EBSCO for this client
+     *
+     * @var string
+     */
+    protected $apiKey;
+
+    /**
      * VuFind Authentication manager
      *
      * @var \VuFind\Auth\Manager
@@ -180,6 +187,7 @@ class Backend extends AbstractBackend
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
+        $this->apiKey = $config->EBSCO_Account->api_key ?? null;
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
