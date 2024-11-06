@@ -176,7 +176,6 @@ abstract class Base implements LoggerAwareInterface
         if (!empty($apiKey)){
             $headers['x-api-key'] = $apiKey;
         }
-        $this->debug(var_dump($headers));
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
