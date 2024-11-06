@@ -341,7 +341,8 @@ class Backend extends AbstractBackend
                     $authenticationToken,
                     $sessionToken,
                     $hlTerms,
-                    $extras
+                    $extras,
+                    $this->apiKey
                 );
             } elseif ('EPF' === $this->backendType) {
                 $pubId = $id;
