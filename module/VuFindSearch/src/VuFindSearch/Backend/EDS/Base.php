@@ -173,7 +173,7 @@ abstract class Base implements LoggerAwareInterface
         $qs = ['profile' => $profile, 'guest' => $isGuest];
         $url = $this->sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null, $apiKey);
-        if (!empty($apiKey)){
+        if (!empty($apiKey)) {
             $headers['x-api-key'] = $apiKey;
         }
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
@@ -226,7 +226,7 @@ abstract class Base implements LoggerAwareInterface
      * @param string $highlightTerms      Comma separated list of terms to highlight
      * in the retrieved record responses
      * @param array  $extraQueryParams    Extra query string parameters
-     * @param string $apiKey              API Key Options      
+     * @param string $apiKey              API Key Options
      *
      * @return array    The requested record
      */
@@ -322,11 +322,11 @@ abstract class Base implements LoggerAwareInterface
     /**
      * Execute an EdsApi autocomplete
      *
-     * @param string $query Search term
-     * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
-     * @param array  $data  Autocomplete API details (from authenticating with
+     * @param string $query  Search term
+     * @param string $type   Autocomplete type (e.g. 'rawqueries' or 'holdings')
+     * @param array  $data   Autocomplete API details (from authenticating with
      * 'autocomplete' option set -- requires token, custid and url keys).
-     * @param bool   $raw   Should we return the results raw (true) or processed
+     * @param bool   $raw    Should we return the results raw (true) or processed
      * (false)?
      * @param string $apiKey API Key (optional)
      *
@@ -363,6 +363,7 @@ abstract class Base implements LoggerAwareInterface
      * @param string $password password associated with an EBSCO EdsApi account
      * @param string $orgid    Organization id the request is initiated from
      * @param array  $params   optional params (autocomplete)
+     * @param array  $apiKey   API Key (Optional)
      *
      * @return array
      */
@@ -474,7 +475,7 @@ abstract class Base implements LoggerAwareInterface
                 $headers[$key] = $value;
             }
         }
-        if(empty($headers['x-api-key'])) {
+        if (empty($headers['x-api-key'])) {
             $this->debug('x-api-key missing');
         }
         $response = $this->httpRequest(
