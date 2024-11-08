@@ -210,7 +210,7 @@ class Backend extends AbstractBackend
         ParamBag $params = null
     ) {
         // process EDS API communication tokens.
-        $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
+        $authenticationToken = $this->getAuthenticationToken(false);
         $sessionToken = $this->getSessionToken();
         $this->debug(
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
@@ -251,7 +251,7 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true, $this->apiKey);
+                                = $this->getAuthenticationToken(true);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
@@ -310,7 +310,7 @@ class Backend extends AbstractBackend
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
-            $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
+            $authenticationToken = $this->getAuthenticationToken(false);
             // check to see if the profile is overridden
             $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
@@ -370,7 +370,7 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true, $this->apiKey);
+                                = $this->getAuthenticationToken(true);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
@@ -666,7 +666,7 @@ class Backend extends AbstractBackend
     public function createSession($isGuest, $profile = '')
     {
         try {
-            $authToken = $this->getAuthenticationToken(false, $this->apiKey);
+            $authToken = $this->getAuthenticationToken(false);
             $results = $this->client->createSession($profile, $isGuest, $authToken, $this->apiKey);
         } catch (ApiException $e) {
             $errorCode = $e->getApiErrorCode();
@@ -677,7 +677,7 @@ class Backend extends AbstractBackend
             );
             if ($e->getApiErrorCode() == 104) {
                 try {
-                    $authToken = $this->getAuthenticationToken(true, $this->apiKey);
+                    $authToken = $this->getAuthenticationToken(true);
                     $results = $this->client
                         ->createSession($this->profile, $isGuest, $authToken, $this->apiKey);
                 } catch (Exception $e) {
@@ -709,7 +709,7 @@ class Backend extends AbstractBackend
         if ($data = $this->cache->getItem($cacheKey)) {
             return $data;
         }
-        $authenticationToken = $this->getAuthenticationToken(false, $this->apiKey);
+        $authenticationToken = $this->getAuthenticationToken(false);
         if (null == $sessionToken) {
             try {
                 $sessionToken = $this->getSessionToken();
@@ -731,7 +731,7 @@ class Backend extends AbstractBackend
                         // token:
                         if ($e->getApiErrorCode() == 104) {
                             $authenticationToken
-                                = $this->getAuthenticationToken(true, $this->apiKey);
+                                = $this->getAuthenticationToken(true);
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
