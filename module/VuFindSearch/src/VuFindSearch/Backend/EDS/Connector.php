@@ -101,7 +101,6 @@ class Connector extends Base implements LoggerAwareInterface
         $cacheable = true
     ) {
         $this->debug("{$method}: {$baseUrl}?{$queryString}");
-        $this->debug("Headers: " . $this->varDump($headers));
 
         $this->client->resetParameters();
 
