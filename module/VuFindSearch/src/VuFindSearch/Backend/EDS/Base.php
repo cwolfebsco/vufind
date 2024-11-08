@@ -266,7 +266,7 @@ abstract class Base implements LoggerAwareInterface
         $pubId,
         $authenticationToken,
         $sessionToken,
-        $apiKey
+        $apiKey = null
     ) {
         $this->debug(
             "Get Record. pubId: $pubId"
@@ -363,7 +363,7 @@ abstract class Base implements LoggerAwareInterface
      * @param string $password password associated with an EBSCO EdsApi account
      * @param string $orgid    Organization id the request is initiated from
      * @param array  $params   optional params (autocomplete)
-     * @param array  $apiKey   API Key (Optional)
+     * @param string $apiKey   API Key (Optional)
      *
      * @return array
      */
