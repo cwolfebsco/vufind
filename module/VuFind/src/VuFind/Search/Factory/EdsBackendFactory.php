@@ -178,6 +178,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions()
     {
+        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',
@@ -192,10 +193,10 @@ class EdsBackendFactory extends AbstractBackendFactory
             $options['session_url'] = $this->edsConfig->General->session_url;
         }
         if (!empty($this->edsConfig->EBSCO_Account->api_key)) {
-            $option['api_key'] = $this->edsConfig->EBSCO_Account->api_key;
+            $options['api_key'] = $this->edsConfig->EBSCO_Account->api_key;
         }
-        if (!empty($this->edsConfig->EBSCO_Account->api_key)) {
-            $option['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
+        if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
+            $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
         }
         return $options;
     }
