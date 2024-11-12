@@ -101,7 +101,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @var ?string
      */
-    protected $apiKey;
+    protected $apiKey = null;
 
     /**
      * The EDS API Key for this client (Guest Usage)
