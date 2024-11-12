@@ -184,7 +184,7 @@ class EdsBackendFactory extends AbstractBackendFactory
                 ?? 'POST',
             'api_url' => $this->edsConfig->General->api_url
                 ?? $this->defaultApiUrl,
-            'is_guest' => !$auth->isGranted('access.EDSExtendedResults')
+            'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
