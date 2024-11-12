@@ -113,9 +113,9 @@ abstract class Base implements LoggerAwareInterface
     /**
      * Indicator if user "isGuest"
      *
-     * @var ?string
+     * @var bool
      */
-    protected $isGuest;
+    protected $isGuest = true;
 
     /**
      * Constructor
