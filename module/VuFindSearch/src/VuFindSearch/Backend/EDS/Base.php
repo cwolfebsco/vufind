@@ -137,16 +137,14 @@ abstract class Base implements LoggerAwareInterface
      *
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
-     * @param string $apiKey              API Key (optional)
      *
      * @return array
      */
-    public function info($authenticationToken = null, $sessionToken = null, $apiKey = null)
+    public function info($authenticationToken = null, $sessionToken = null)
     {
         $this->debug('Info');
-        $this->debug("apiKey: $apiKey");
         $url = $this->apiHost . '/info';
-        $headers = $this->setTokens($authenticationToken, $sessionToken, $apiKey);
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
     }
 
@@ -156,15 +154,13 @@ abstract class Base implements LoggerAwareInterface
      * @param string $profile   Profile to use
      * @param string $isGuest   Whether or not this session will be a guest session
      * @param string $authToken Authentication token
-     * @param string $apiKey    API Key
      *
      * @return array
      */
     public function createSession(
         $profile = null,
         $isGuest = null,
-        $authToken = null,
-        $apiKey = null
+        $authToken = null
     ) {
         $this->debug(
             'Create Session for profile: '
@@ -172,10 +168,7 @@ abstract class Base implements LoggerAwareInterface
         );
         $qs = ['profile' => $profile, 'guest' => $isGuest];
         $url = $this->sessionHost . '/createsession';
-        $headers = $this->setTokens($authToken, null, $apiKey);
-        if (!empty($apiKey)) {
-            $headers['x-api-key'] = $apiKey;
-        }
+        $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
     }
 
@@ -226,7 +219,6 @@ abstract class Base implements LoggerAwareInterface
      * @param string $highlightTerms      Comma separated list of terms to highlight
      * in the retrieved record responses
      * @param array  $extraQueryParams    Extra query string parameters
-     * @param string $apiKey              API Key Options
      *
      * @return array    The requested record
      */
@@ -236,8 +228,7 @@ abstract class Base implements LoggerAwareInterface
         $authenticationToken,
         $sessionToken,
         $highlightTerms = null,
-        $extraQueryParams = [],
-        $apiKey = null
+        $extraQueryParams = []
     ) {
         $this->debug(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
@@ -247,7 +238,7 @@ abstract class Base implements LoggerAwareInterface
             $qs['highlightterms'] = $highlightTerms;
         }
         $url = $this->apiHost . '/retrieve';
-        $headers = $this->setTokens($authenticationToken, $sessionToken, $apiKey);
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
 
@@ -258,22 +249,20 @@ abstract class Base implements LoggerAwareInterface
      * EpfApi
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
-     * @param string $apiKey              API Key (optional)
      *
      * @return array    The requested record
      */
     public function retrieveEpfItem(
         $pubId,
         $authenticationToken,
-        $sessionToken,
-        $apiKey = null
+        $sessionToken
     ) {
         $this->debug(
             "Get Record. pubId: $pubId"
         );
         $qs = ['id' => $pubId];
         $url = $this->apiHost . '/retrieve';
-        $headers = $this->setTokens($authenticationToken, $sessionToken, $apiKey);
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
 
@@ -283,11 +272,10 @@ abstract class Base implements LoggerAwareInterface
      * @param SearchRequestModel $query               Search request object
      * @param string             $authenticationToken Authentication token
      * @param string             $sessionToken        Session token
-     * @param string             $apiKey              API Key (optional)
      *
      * @return array An array of query results as returned from the api
      */
-    public function search($query, $authenticationToken, $sessionToken, $apiKey = null)
+    public function search($query, $authenticationToken, $sessionToken)
     {
         // Query String Parameters
         $method = $this->searchHttpMethod;
@@ -297,7 +285,7 @@ abstract class Base implements LoggerAwareInterface
             'Query: ' . ($method === 'GET' ? $this->varDump($qs) : $json)
         );
         $url = $this->apiHost . '/search';
-        $headers = $this->setTokens($authenticationToken, $sessionToken, $apiKey);
+        $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs, $method, $json);
     }
 
@@ -322,17 +310,16 @@ abstract class Base implements LoggerAwareInterface
     /**
      * Execute an EdsApi autocomplete
      *
-     * @param string $query  Search term
-     * @param string $type   Autocomplete type (e.g. 'rawqueries' or 'holdings')
-     * @param array  $data   Autocomplete API details (from authenticating with
+     * @param string $query Search term
+     * @param string $type  Autocomplete type (e.g. 'rawqueries' or 'holdings')
+     * @param array  $data  Autocomplete API details (from authenticating with
      * 'autocomplete' option set -- requires token, custid and url keys).
-     * @param bool   $raw    Should we return the results raw (true) or processed
+     * @param bool   $raw   Should we return the results raw (true) or processed
      * (false)?
-     * @param string $apiKey API Key (optional)
      *
      * @return array An array of autocomplete terns as returned from the api
      */
-    public function autocomplete($query, $type, $data, $raw = false, $apiKey = null)
+    public function autocomplete($query, $type, $data, $raw = false)
     {
         // $filters is an array of filter objects
         // filter objects consist of name and an array of values (customer ids)
@@ -348,11 +335,7 @@ abstract class Base implements LoggerAwareInterface
         $url = $data['url'] . '?' . http_build_query($params);
 
         $this->debug('Autocomplete URL: ' . $url);
-        $headers = [];
-        if (!empty($apiKey)) {
-            $headers['x-api-key'] = $apiKey;
-        }
-        $response = $this->call($url, $headers, null, 'GET', null);
+        $response = $this->call($url, null, null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
 
@@ -363,7 +346,6 @@ abstract class Base implements LoggerAwareInterface
      * @param string $password password associated with an EBSCO EdsApi account
      * @param string $orgid    Organization id the request is initiated from
      * @param array  $params   optional params (autocomplete)
-     * @param string $apiKey   API Key (Optional)
      *
      * @return array
      */
@@ -371,11 +353,10 @@ abstract class Base implements LoggerAwareInterface
         $username = null,
         $password = null,
         $orgid = null,
-        $params = null,
-        $apiKey = null
+        $params = null
     ) {
         $this->debug(
-            "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid, apiKey: $apiKey"
+            "Authenticating: username: $username, password: XXXXXXX, orgid: $orgid"
         );
         $url = $this->authHost . '/uidauth';
         $org = $orgid ?? $this->orgId;
@@ -392,12 +373,8 @@ abstract class Base implements LoggerAwareInterface
         if (isset($params)) {
             $authInfo['Options'] = $params;
         }
-        $headers = [];
-        if (!empty($apiKey)) {
-            $headers['x-api-key'] = $apiKey;
-        }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, $headers, null, 'POST', $messageBody, '', false);
+        return $this->call($url, null, null, 'POST', $messageBody, '', false);
     }
 
     /**
@@ -475,9 +452,6 @@ abstract class Base implements LoggerAwareInterface
                 $headers[$key] = $value;
             }
         }
-        if (empty($headers['x-api-key'])) {
-            $this->debug('x-api-key missing');
-        }
         $response = $this->httpRequest(
             $baseUrl,
             $method,
@@ -521,11 +495,10 @@ abstract class Base implements LoggerAwareInterface
      *
      * @param string $authenticationToken Authentication token to add
      * @param string $sessionToken        Session token to add
-     * @param string $apiKey              API Key (optional)
      *
      * @return array Associative array of header parameters to add.
      */
-    protected function setTokens($authenticationToken = null, $sessionToken = null, $apiKey = null)
+    protected function setTokens($authenticationToken = null, $sessionToken = null)
     {
         $headers = [];
         if (!empty($authenticationToken)) {
@@ -533,9 +506,6 @@ abstract class Base implements LoggerAwareInterface
         }
         if (!empty($sessionToken)) {
             $headers['x-sessionToken'] = $sessionToken;
-        }
-        if (!empty($apiKey)) {
-            $headers['x-api-key'] = $apiKey;
         }
         return $headers;
     }
