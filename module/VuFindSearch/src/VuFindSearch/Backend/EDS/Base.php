@@ -101,21 +101,21 @@ abstract class Base implements LoggerAwareInterface
      *
      * @var ?string
      */
-    protected $apiKey;
+    protected $apiKey = null;
 
     /**
      * The EDS API Key for this client (Guest Usage)
      *
      * @var ?string
      */
-    protected $apiKeyGuest;
+    protected $apiKeyGuest = null;
 
     /**
      * Indicator if user "isGuest"
      *
-     * @var ?string
+     * @var bool
      */
-    protected $isGuest;
+    protected $isGuest = true;
 
     /**
      * Constructor
@@ -479,9 +479,9 @@ abstract class Base implements LoggerAwareInterface
             'Accept-Encoding' => 'gzip,deflate',
         ];
         $this->debug(
-            'isguest: ' . $this->isGuest
-            . ' | APIKey: ' . $this->apiKey
-            . ' | APIKey Guest: ' . $this->apiKeyGuest
+            'isguest: ' . ($this->isGuest ? 'true' : 'false')
+            . ' | APIKey: ' . ($this->apiKey ?? '-')
+            . ' | APIKey Guest: ' . ($this->apiKeyGuest ?? '-')
         );
         if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {
