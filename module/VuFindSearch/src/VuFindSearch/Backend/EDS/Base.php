@@ -490,9 +490,9 @@ abstract class Base implements LoggerAwareInterface
         }
         if (!empty($this->apiKey)) {
             $headers['x-api-key'] = $this->apiKey;
-            if ($this->isGuest && !empty($this->apiKeyGuest)) {
-                $headers['x-api-key'] = $this->apiKeyGuest;
-            }
+        }
+        if ($this->isGuest && !empty($this->apiKeyGuest)) {
+            $headers['x-api-key'] = $this->apiKeyGuest;
         }
         $response = $this->httpRequest(
             $baseUrl,
