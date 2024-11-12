@@ -478,7 +478,11 @@ abstract class Base implements LoggerAwareInterface
             'Content-Type' => $this->contentType,
             'Accept-Encoding' => 'gzip,deflate',
         ];
-        $this->debug("isguest: " . $this->isGuest . " | APIKey: " . $this->apiKey . " | APIKey Guest: " . $this->apiKeyGuest);
+        $this->debug(
+            "isguest: " . $this->isGuest
+            . " | APIKey: " . $this->apiKey
+            . " | APIKey Guest: " . $this->apiKeyGuest
+        );
         if (null != $headerParams) {
             foreach ($headerParams as $key => $value) {
                 $headers[$key] = $value;
