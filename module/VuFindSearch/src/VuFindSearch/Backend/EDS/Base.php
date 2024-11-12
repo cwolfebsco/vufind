@@ -108,7 +108,7 @@ abstract class Base implements LoggerAwareInterface
      *
      * @var ?string
      */
-    protected $apiKeyGuest;
+    protected $apiKeyGuest = null;
 
     /**
      * Indicator if user "isGuest"
