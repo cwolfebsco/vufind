@@ -118,6 +118,27 @@ abstract class Base implements LoggerAwareInterface
     protected $isGuest = true;
 
     /**
+     * Indicator if additional headers should be sent
+     * 
+     * @var bool
+     */
+
+    protected $sendUserIp = false;
+
+    /**
+     * Vendor (e.g. VuFind)
+     * @var ?string
+     */
+    protected $reportVendor = null;
+
+    /**
+     * Vendor (e.g. 10.1)
+     * @var ?string
+     */
+    protected $reportVendorVersion = null;
+
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -157,6 +178,15 @@ abstract class Base implements LoggerAwareInterface
                         break;
                     case 'is_guest':
                         $this->isGuest = $value;
+                        break;
+                    case 'send_user_ip':
+                        $this->sendUserIp = $value;
+                        break;
+                    case 'report_vendor':
+                        $this->reportVendor = $value;
+                        break;
+                    case 'report_vendor_version':
+                        $this->reportVendorVersion = $value;
                         break;
                 }
             }
@@ -494,6 +524,20 @@ abstract class Base implements LoggerAwareInterface
         if ($this->isGuest && !empty($this->apiKeyGuest)) {
             $headers['x-api-key'] = $this->apiKeyGuest;
         }
+        if($this->sendUserIp) {
+            
+            $headers['x-eis-enduser-ip-address'] = "";
+            $headers['x-eis-enduser-user-agent'] = isset($_SERVER['HTTP_USER_AGENT']) 
+                ? $_SERVER['HTTP_USER_AGENT']
+                : 'No user agent';
+            if (!empty($this->reportVendor)) {
+                $headers['x-eis-vendor'] = $this->reportVendor;
+            }
+            if (!empty($this->reportVendorVersion)) {
+                $headers['x-eis-vendor-version'] = $this->reportVendoVersion;
+            }
+        }
+
         $response = $this->httpRequest(
             $baseUrl,
             $method,
