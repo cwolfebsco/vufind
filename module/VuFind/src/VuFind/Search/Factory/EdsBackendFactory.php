@@ -63,6 +63,13 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $edsConfig;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Laminas\Config\Config
+     */
+    protected $vuFindConfig;
+
+    /**
      * EDS Account data
      *
      * @var array
@@ -103,6 +110,8 @@ class EdsBackendFactory extends AbstractBackendFactory
         $this->setup($sm);
         $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($this->getServiceName());
+        $this->vuFindConfig = $this->getService(\VuFind\Config\PluginManager::class)
+            ->get('config');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
@@ -200,12 +209,9 @@ class EdsBackendFactory extends AbstractBackendFactory
             $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
         }
         if ($options['send_user_ip']) {
-            if (!empty($this->edsConfig->AdditionalHeaders->report_vendor)) {
-                $options['report_vendor'] = $this->getVendorDetails('vendor');
-            }
-            if (!empty($this->edsConfig->AdditionalHeaders->report_vendor_version)) {
-                $options['report_vendor_version'] = $this->getVendorDetails('version');
-            }
+            $options['ip_to_report'] = $this->getService(\VuFind\Net\UserIpReader::class)->getUserIp();
+            $options['report_vendor'] = $this->getVendorDetails('vendor');
+            $options['report_vendor_version'] = $this->getVendorDetails('version');
         }
         return $options;
     }
@@ -229,7 +235,7 @@ class EdsBackendFactory extends AbstractBackendFactory
         // if not configured, we'll use the generator from config.ini, assuming that it is
         // a string like VuFind 10.1
 
-        $generator = $this->config->Site->generator ?? "";
+        $generator = $this->vuFindConfig->Site->generator ?? "";
         $generatorDetails = explode(" ", $generator);
         if (count($generatorDetails) > 0 && $type == 'vendor') {
             return $generatorDetails[0];

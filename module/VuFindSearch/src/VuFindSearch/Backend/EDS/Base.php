@@ -137,6 +137,11 @@ abstract class Base implements LoggerAwareInterface
      */
     protected $reportVendorVersion = null;
 
+    /**
+     * IpToReport (e.g. 123.123.123.13)
+     * @var ?string
+     */
+    protected $ipToReport = null;
 
     /**
      * Constructor
@@ -187,6 +192,9 @@ abstract class Base implements LoggerAwareInterface
                         break;
                     case 'report_vendor_version':
                         $this->reportVendorVersion = $value;
+                        break;
+                    case 'ip_to_report':
+                        $this->ipToReport = $value;
                         break;
                 }
             }
@@ -526,7 +534,7 @@ abstract class Base implements LoggerAwareInterface
         }
         if($this->sendUserIp) {
             
-            $headers['x-eis-enduser-ip-address'] = "";
+            $headers['x-eis-enduser-ip-address'] = $this->ipToReport ?? '-';
             $headers['x-eis-enduser-user-agent'] = isset($_SERVER['HTTP_USER_AGENT']) 
                 ? $_SERVER['HTTP_USER_AGENT']
                 : 'No user agent';
@@ -534,7 +542,7 @@ abstract class Base implements LoggerAwareInterface
                 $headers['x-eis-vendor'] = $this->reportVendor;
             }
             if (!empty($this->reportVendorVersion)) {
-                $headers['x-eis-vendor-version'] = $this->reportVendoVersion;
+                $headers['x-eis-vendor-version'] = $this->reportVendorVersion;
             }
         }
 
