@@ -217,14 +217,14 @@ class EdsBackendFactory extends AbstractBackendFactory
     }
 
     /**
-     * read vendor details from EDS.ini or try to create from generator in config.ini
-     * 
-     * @param string    $type   'vendor' or 'version'
-     * 
-     * @return string    
+     * Read vendor details from EDS.ini or try to create from generator in config.ini
+     *
+     * @param string $type 'vendor' or 'version'
+     *
+     * @return string
      */
-
-     protected function getVendorDetails($type = 'vendor') {
+    protected function getVendorDetails($type = 'vendor')
+    {
         if (!empty($this->edsConfig->AdditionalHeaders->report_vendor) && $type == 'vendor') {
             return $this->edsConfig->AdditionalHeaders->report_vendor;
         }
@@ -244,7 +244,7 @@ class EdsBackendFactory extends AbstractBackendFactory
             return $generatorDetails[1];
         }
         return "";
-     }
+    }
 
     /**
      * Create the EDS query builder.

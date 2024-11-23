@@ -119,26 +119,28 @@ abstract class Base implements LoggerAwareInterface
 
     /**
      * Indicator if additional headers should be sent
-     * 
+     *
      * @var bool
      */
-
     protected $sendUserIp = false;
 
     /**
      * Vendor (e.g. VuFind)
+     *
      * @var ?string
      */
     protected $reportVendor = null;
 
     /**
      * Vendor (e.g. 10.1)
+     *
      * @var ?string
      */
     protected $reportVendorVersion = null;
 
     /**
      * IpToReport (e.g. 123.123.123.13)
+     *
      * @var ?string
      */
     protected $ipToReport = null;
@@ -532,10 +534,9 @@ abstract class Base implements LoggerAwareInterface
         if ($this->isGuest && !empty($this->apiKeyGuest)) {
             $headers['x-api-key'] = $this->apiKeyGuest;
         }
-        if($this->sendUserIp) {
-            
+        if ($this->sendUserIp) {
             $headers['x-eis-enduser-ip-address'] = $this->ipToReport ?? '-';
-            $headers['x-eis-enduser-user-agent'] = isset($_SERVER['HTTP_USER_AGENT']) 
+            $headers['x-eis-enduser-user-agent'] = isset($_SERVER['HTTP_USER_AGENT'])
                 ? $_SERVER['HTTP_USER_AGENT']
                 : 'No user agent';
             if (!empty($this->reportVendor)) {
