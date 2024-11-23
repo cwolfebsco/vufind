@@ -185,6 +185,7 @@ class EdsBackendFactory extends AbstractBackendFactory
             'api_url' => $this->edsConfig->General->api_url
                 ?? $this->defaultApiUrl,
             'is_guest' => !$auth->isGranted('access.EDSExtendedResults'),
+            'send_user_ip' => $this->edsConfig->AdditionalHeaders->send_user_ip ?? false,
         ];
         if (isset($this->edsConfig->General->auth_url)) {
             $options['auth_url'] = $this->edsConfig->General->auth_url;
@@ -198,8 +199,46 @@ class EdsBackendFactory extends AbstractBackendFactory
         if (!empty($this->edsConfig->EBSCO_Account->api_key_guest)) {
             $options['api_key_guest'] = $this->edsConfig->EBSCO_Account->api_key_guest;
         }
+        if ($options['send_user_ip']) {
+            if (!empty($this->edsConfig->AdditionalHeaders->report_vendor)) {
+                $options['report_vendor'] = $this->getVendorDetails('vendor');
+            }
+            if (!empty($this->edsConfig->AdditionalHeaders->report_vendor_version)) {
+                $options['report_vendor_version'] = $this->getVendorDetails('version');
+            }
+        }
         return $options;
     }
+
+    /**
+     * read vendor details from EDS.ini or try to create from generator in config.ini
+     * 
+     * @param string    $type   'vendor' or 'version'
+     * 
+     * @return string    
+     */
+
+     protected function getVendorDetails($type = 'vendor') {
+        if (!empty($this->edsConfig->AdditionalHeaders->report_vendor) && $type == 'vendor') {
+            return $this->edsConfig->AdditionalHeaders->report_vendor;
+        }
+        if (!empty($this->edsConfig->AdditionalHeaders->report_vendor_version) && $type == 'version') {
+            return $this->edsConfig->AdditionalHeaders->report_vendor_version;
+        }
+
+        // if not configured, we'll use the generator from config.ini, assuming that it is
+        // a string like VuFind 10.1
+
+        $generator = $this->config->Site->generator ?? "";
+        $generatorDetails = explode(" ", $generator);
+        if (count($generatorDetails) > 0 && $type == 'vendor') {
+            return $generatorDetails[0];
+        }
+        if (count($generatorDetails) > 1 && $type == 'version') {
+            return $generatorDetails[1];
+        }
+        return "";
+     }
 
     /**
      * Create the EDS query builder.
