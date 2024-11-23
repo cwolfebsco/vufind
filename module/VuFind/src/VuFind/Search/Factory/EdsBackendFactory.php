@@ -35,6 +35,8 @@ use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
+use function count;
+
 /**
  * Factory for EDS backends.
  *
@@ -235,15 +237,15 @@ class EdsBackendFactory extends AbstractBackendFactory
         // if not configured, we'll use the generator from config.ini, assuming that it is
         // a string like VuFind 10.1
 
-        $generator = $this->vuFindConfig->Site->generator ?? "";
-        $generatorDetails = explode(" ", $generator);
+        $generator = $this->vuFindConfig->Site->generator ?? '';
+        $generatorDetails = explode(' ', $generator);
         if (count($generatorDetails) > 0 && $type == 'vendor') {
             return $generatorDetails[0];
         }
         if (count($generatorDetails) > 1 && $type == 'version') {
             return $generatorDetails[1];
         }
-        return "";
+        return '';
     }
 
     /**
