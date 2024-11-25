@@ -139,10 +139,10 @@ abstract class Base implements LoggerAwareInterface
     protected $ipToReport = null;
 
     /**
-    * UserAgent (e.g. 10.1)
-    *
-    * @var ?string
-    */
+     * UserAgent (e.g. 10.1)
+     *
+     * @var ?string
+     */
     protected $userAgent = null;
 
     /**
