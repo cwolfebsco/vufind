@@ -125,13 +125,6 @@ abstract class Base implements LoggerAwareInterface
     protected $sendUserIp = false;
 
     /**
-     * Vendor (e.g. VuFind)
-     *
-     * @var ?string
-     */
-    protected $reportVendor = null;
-
-    /**
      * Vendor (e.g. 10.1)
      *
      * @var ?string
@@ -189,14 +182,14 @@ abstract class Base implements LoggerAwareInterface
                     case 'send_user_ip':
                         $this->sendUserIp = $value;
                         break;
-                    case 'report_vendor':
-                        $this->reportVendor = $value;
-                        break;
                     case 'report_vendor_version':
                         $this->reportVendorVersion = $value;
                         break;
                     case 'ip_to_report':
                         $this->ipToReport = $value;
+                        break;
+                    case 'user_agent':
+                        $this->userAgent = $value;
                         break;
                 }
             }
@@ -536,16 +529,12 @@ abstract class Base implements LoggerAwareInterface
         }
         if ($this->sendUserIp) {
             $headers['x-eis-enduser-ip-address'] = $this->ipToReport ?? '-';
-            $headers['x-eis-enduser-user-agent'] = $_SERVER['HTTP_USER_AGENT']
-                ?? 'No user agent';
-            if (!empty($this->reportVendor)) {
-                $headers['x-eis-vendor'] = $this->reportVendor;
-            }
+            $headers['x-eis-enduser-user-agent'] = $this->userAgent ?? 'No user agent';
+            $headers['x-eis-vendor'] = 'VuFind';
             if (!empty($this->reportVendorVersion)) {
                 $headers['x-eis-vendor-version'] = $this->reportVendorVersion;
             }
         }
-
         $response = $this->httpRequest(
             $baseUrl,
             $method,

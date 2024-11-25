@@ -35,8 +35,6 @@ use VuFindSearch\Backend\EDS\Connector;
 use VuFindSearch\Backend\EDS\QueryBuilder;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
-use function count;
-
 /**
  * Factory for EDS backends.
  *
@@ -212,40 +210,13 @@ class EdsBackendFactory extends AbstractBackendFactory
         }
         if ($options['send_user_ip']) {
             $options['ip_to_report'] = $this->getService(\VuFind\Net\UserIpReader::class)->getUserIp();
-            $options['report_vendor'] = $this->getVendorDetails('vendor');
-            $options['report_vendor_version'] = $this->getVendorDetails('version');
+            $options['report_vendor_version'] = \VuFind\Config\Version::getBuildVersion();
+            $server = $this->getService(\VuFind\Http\PhpEnvironment\Request::class)->getServer();
+            if (!empty($server['HTTP_USER_AGENT'])) {
+                $options['user_agent'] = $server['HTTP_USER_AGENT'];
+            }
         }
         return $options;
-    }
-
-    /**
-     * Read vendor details from EDS.ini or try to create from generator in config.ini
-     *
-     * @param string $type 'vendor' or 'version'
-     *
-     * @return string
-     */
-    protected function getVendorDetails($type = 'vendor')
-    {
-        if (!empty($this->edsConfig->AdditionalHeaders->report_vendor) && $type == 'vendor') {
-            return $this->edsConfig->AdditionalHeaders->report_vendor;
-        }
-        if (!empty($this->edsConfig->AdditionalHeaders->report_vendor_version) && $type == 'version') {
-            return $this->edsConfig->AdditionalHeaders->report_vendor_version;
-        }
-
-        // if not configured, we'll use the generator from config.ini, assuming that it is
-        // a string like VuFind 10.1
-
-        $generator = $this->vuFindConfig->Site->generator ?? '';
-        $generatorDetails = explode(' ', $generator);
-        if (count($generatorDetails) > 0 && $type == 'vendor') {
-            return $generatorDetails[0];
-        }
-        if (count($generatorDetails) > 1 && $type == 'version') {
-            return $generatorDetails[1];
-        }
-        return '';
     }
 
     /**
