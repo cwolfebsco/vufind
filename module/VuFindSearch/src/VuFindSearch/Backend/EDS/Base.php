@@ -406,7 +406,7 @@ abstract class Base implements LoggerAwareInterface
         $url = $data['url'] . '?' . http_build_query($params);
 
         $this->debug('Autocomplete URL: ' . $url);
-        $response = $this->call($url, null, null, 'GET', null);
+        $response = $this->call($url, [], null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
 
@@ -445,7 +445,7 @@ abstract class Base implements LoggerAwareInterface
             $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody, '', false);
+        return $this->call($url, [], null, 'POST', $messageBody, '', false);
     }
 
     /**
@@ -501,7 +501,7 @@ abstract class Base implements LoggerAwareInterface
      */
     protected function call(
         $baseUrl,
-        $headerParams,
+        $headerParams = [],
         $params = [],
         $method = 'GET',
         $message = null,
@@ -513,20 +513,41 @@ abstract class Base implements LoggerAwareInterface
         $queryString = implode('&', $queryParameters);
         $this->debug("Querystring to use: $queryString ");
         // Build headers
-        $headers = [
-            'Accept' => $this->accept,
-            'Content-Type' => $this->contentType,
-            'Accept-Encoding' => 'gzip,deflate',
-        ];
+        $headers = $this->getRequestHeaders($headerParams);
+        // Debug some info about Guest Access & API Keys used
         $this->debug(
             'isGuest: ' . ($this->isGuest ? 'true' : 'false')
             . ' | APIKey: ' . ($this->apiKey ? substr($this->apiKey, 0, 10) : '-')
             . ' | APIKey Guest: ' . ($this->apiKeyGuest ? substr($this->apiKeyGuest, 0, 10) : '-')
         );
-        if (null != $headerParams) {
-            foreach ($headerParams as $key => $value) {
-                $headers[$key] = $value;
-            }
+        $response = $this->httpRequest(
+            $baseUrl,
+            $method,
+            $queryString,
+            $headers,
+            $message,
+            $messageFormat,
+            $cacheable
+        );
+        return $this->process($response);
+    }
+
+    /**
+     * Creat Header Array for Call Function
+     *
+     * @param array $headerParams an array (could be empty) of headders to build
+     *
+     * @return array Array of Headers to be used in call function
+     */
+    protected function getRequestHeaders(array $headerParams = []): array
+    {
+        $headers = [
+            'Accept' => $this->accept,
+            'Content-Type' => $this->contentType,
+            'Accept-Encoding' => 'gzip,deflate',
+        ];
+        foreach ($headerParams as $key => $value) {
+            $headers[$key] = $value;
         }
         if (!empty($this->apiKey)) {
             $headers['x-api-key'] = $this->apiKey;
@@ -542,16 +563,8 @@ abstract class Base implements LoggerAwareInterface
                 $headers['x-eis-vendor-version'] = $this->reportVendorVersion;
             }
         }
-        $response = $this->httpRequest(
-            $baseUrl,
-            $method,
-            $queryString,
-            $headers,
-            $message,
-            $messageFormat,
-            $cacheable
-        );
-        return $this->process($response);
+
+        return $headers;
     }
 
     /**
