@@ -63,13 +63,6 @@ class EdsBackendFactory extends AbstractBackendFactory
     protected $edsConfig;
 
     /**
-     * VuFind configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $vuFindConfig;
-
-    /**
      * EDS Account data
      *
      * @var array
@@ -110,8 +103,6 @@ class EdsBackendFactory extends AbstractBackendFactory
         $this->setup($sm);
         $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
             ->get($this->getServiceName());
-        $this->vuFindConfig = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get('config');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }
