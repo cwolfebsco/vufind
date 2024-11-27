@@ -535,7 +535,7 @@ abstract class Base implements LoggerAwareInterface
     /**
      * Creat Header Array for Call Function
      *
-     * @param array $headerParams an array (could be empty) of headders to build
+     * @param array $headerParams An array (could be empty) of headers to build
      *
      * @return array Array of Headers to be used in call function
      */
